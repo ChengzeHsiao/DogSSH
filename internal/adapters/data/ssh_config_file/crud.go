@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Adembc/dogssh/internal/core/domain"
+	"github.com/ChengzeHsiao/dogssh/internal/core/domain"
 	"github.com/kevinburke/ssh_config"
 )
 

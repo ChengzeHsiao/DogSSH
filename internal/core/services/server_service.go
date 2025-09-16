@@ -26,8 +26,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Adembc/dogssh/internal/core/domain"
-	"github.com/Adembc/dogssh/internal/core/ports"
+	"github.com/ChengzeHsiao/dogssh/internal/core/domain"
+	"github.com/ChengzeHsiao/dogssh/internal/core/ports"
 	"go.uber.org/zap"
 )
 

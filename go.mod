@@ -1,4 +1,4 @@
-module github.com/Adembc/dogssh
+module github.com/ChengzeHsiao/dogssh
 
 go 1.24.6
 

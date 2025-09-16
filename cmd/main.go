@@ -19,11 +19,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Adembc/dogssh/internal/adapters/data/ssh_config_file"
-	"github.com/Adembc/dogssh/internal/logger"
+	"github.com/ChengzeHsiao/dogssh/internal/adapters/data/ssh_config_file"
+	"github.com/ChengzeHsiao/dogssh/internal/logger"
 
-	"github.com/Adembc/dogssh/internal/adapters/ui"
-	"github.com/Adembc/dogssh/internal/core/services"
+	"github.com/ChengzeHsiao/dogssh/internal/adapters/ui"
+	"github.com/ChengzeHsiao/dogssh/internal/core/services"
 	"github.com/spf13/cobra"
 )
 

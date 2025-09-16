@@ -18,7 +18,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Adembc/dogssh/internal/core/domain"
+	"github.com/ChengzeHsiao/dogssh/internal/core/domain"
 )
 
 // SortMode controls how unpinned servers are ordered in the UI.

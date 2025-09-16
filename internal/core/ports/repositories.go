@@ -14,7 +14,7 @@
 
 package ports
 
-import "github.com/Adembc/dogssh/internal/core/domain"
+import "github.com/ChengzeHsiao/dogssh/internal/core/domain"
 
 type ServerRepository interface {
 	ListServers(query string) ([]domain.Server, error)

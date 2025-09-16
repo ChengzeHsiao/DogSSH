@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Adembc/dogssh/internal/core/domain"
+	"github.com/ChengzeHsiao/dogssh/internal/core/domain"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )

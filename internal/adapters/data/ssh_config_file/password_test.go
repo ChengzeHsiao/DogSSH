@@ -19,7 +19,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Adembc/dogssh/internal/core/domain"
+	"github.com/ChengzeHsiao/dogssh/internal/core/domain"
 	"go.uber.org/zap"
 )
 

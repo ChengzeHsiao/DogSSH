@@ -36,3 +36,14 @@ bin
 .DS_Store
 # Added by goreleaser init:
 dist/
+
+# Package tarballs and Homebrew formula
+*.tar.gz
+dogssh.rb
+
+# Build output
+/bin/
+
+# Temporary files
+*.tmp
+*.temp

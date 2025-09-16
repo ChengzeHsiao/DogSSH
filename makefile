@@ -1,4 +1,4 @@
-# Makefile for LazySSH project
+# Makefile for DogSSH project
 
 ##@ General
 

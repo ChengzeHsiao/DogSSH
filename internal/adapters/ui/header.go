@@ -64,7 +64,7 @@ func (h *AppHeader) buildLeftSection(bg tcell.Color) *tview.TextView {
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignLeft)
 	left.SetBackgroundColor(bg)
-	stylizedName := "🚀 [#FFFFFF::b]lazy[-][#55D7FF::b]ssh[-]"
+	stylizedName := "🚀 [#FFFFFF::b]Dog[-][#55D7FF::b]SSH[-]"
 	left.SetText(stylizedName)
 	return left
 }
@@ -99,7 +99,7 @@ func (h *AppHeader) buildRightSection(bg tcell.Color) *tview.TextView {
 		SetTextAlign(tview.AlignRight)
 	right.SetBackgroundColor(bg)
 	currentTime := time.Now().Format("Mon, 02 Jan 2006 15:04")
-	right.SetText("[#55AAFF::u]🔗 " + h.repoURL + "[-]  [#AAAAAA]• " + currentTime + "[-]")
+	right.SetText("[#AAAAAA]• " + currentTime + "[-]")
 	return right
 }
 

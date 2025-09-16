@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Adembc/dogssh/internal/core/domain"
+	"github.com/ChengzeHsiao/dogssh/internal/core/domain"
 	"github.com/atotto/clipboard"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -169,11 +169,30 @@ func (t *tui) handleSearchToggle() {
 
 func (t *tui) handleServerConnect() {
 	if server, ok := t.serverList.GetSelectedServer(); ok {
+		// Store the current server for post-SSH operations
+		alias := server.Alias
 
+		// Suspend the TUI and execute SSH
 		t.app.Suspend(func() {
-			_ = t.serverService.SSH(server.Alias)
+			_ = t.serverService.SSH(alias)
 		})
-		t.refreshServerList()
+
+		// After SSH session ends, ensure we're back to the main screen
+		// and refresh the server list
+		t.app.QueueUpdateDraw(func() {
+			// Ensure we're showing the main interface
+			t.returnToMain()
+			// Hide search bar if it was visible
+			if t.searchVisible {
+				t.hideSearchBar()
+			}
+			// Refresh the server list to update connection metadata
+			t.refreshServerList()
+			// Re-focus on the server list
+			t.app.SetFocus(t.serverList)
+			// Show a status message
+			t.showStatusTemp(fmt.Sprintf("Disconnected from %s", alias))
+		})
 	}
 }
 

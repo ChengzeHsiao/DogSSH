@@ -4,193 +4,130 @@
 
 ---
 
-DogSSH is a terminal-based, interactive SSH manager inspired by tools like lazydocker and k9s — but built for managing your fleet of servers directly from your terminal.
-<br/>
-With dogssh, you can quickly navigate, connect, manage, and transfer files between your local machine and any server defined in your `~/.ssh/config`. No more remembering IP addresses or running long scp commands — just a clean, keyboard-driven UI.
+# DogSSH
+
+[![License](https://img.shields.io/github/license/chengzehsiao/dogssh)](LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/chengzehsiao/dogssh)](https://github.com/chengzehsiao/dogssh/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/chengzehsiao/dogssh)](https://goreportcard.com/report/github.com/chengzehsiao/dogssh)
+
+DogSSH 是一个基于终端的交互式 SSH 管理工具，灵感来源于 lazydocker 和 k9s 等工具，专为直接从终端管理服务器集群而设计。
+
+使用 DogSSH，您可以快速导航、连接、管理本地计算机与 `~/.ssh/config` 文件中定义的任何服务器之间的文件传输。无需再记住 IP 地址或运行冗长的 scp 命令，只需一个干净、键盘驱动的用户界面。
 
 ---
 
-## ✨ Features
+## ✨ 核心功能
 
-### Server Management
-- 📜 Read & display servers from your `~/.ssh/config` in a scrollable list.
-- ➕ Add a new server from the UI by specifying alias, host/IP, username, port, identity file.
-- ✏ Edit existing server entries directly from the UI.
-- 🗑 Delete server entries safely.
-- 📌 Pin / unpin servers to keep favorites at the top.
-- 🏓 Ping server to check status.
+### 服务器管理
+- 📜 从您的 `~/.ssh/config` 文件中读取并以可滚动列表的形式显示服务器。
+- ➕ 通过 UI 添加新服务器，指定别名、主机/IP、用户名、端口和身份文件。
+- ✏ 直接从 UI 编辑现有的服务器条目。
+- 🗑 安全地删除服务器条目。
+- 📌 固定/取消固定服务器，将收藏夹置顶。
+- 🏓 Ping 服务器以检查状态。
 
-### Quick Server Navigation
-- 🔍 Fuzzy search by alias, IP, or tags.
-- 🖥 One‑keypress SSH into the selected server (Enter).
-- 🏷 Tag servers (e.g., prod, dev, test) for quick filtering.
-- ↕️ Sort by alias or last SSH (toggle + reverse).
+### 快速服务器导航
+- 🔍 按别名、IP 或标签进行模糊搜索。
+- 🖥 一键 SSH 连接到所选服务器（Enter 键）。
+- 🏷 为服务器添加标签（例如，prod、dev、test）以便快速筛选。
+- ↕️ 按别名或上次 SSH 时间排序（切换 + 反向）。
 
-
-### Upcoming
-- 📁 Copy files between local and servers with an easy picker UI.
-- 📡 Port forwarding (local↔remote) from the UI.
-- 🔑 Enhanced Key Management:
-    - Use default local public key (`~/.ssh/id_ed25519.pub` or `~/.ssh/id_rsa.pub`)
-    - Paste custom public keys manually
-    - Generate new keypairs and deploy them
-    - Automatically append keys to `~/.ssh/authorized_keys` with correct permissions
----
-
-## 🔐 Security Notice
-
-dogssh does not introduce any new security risks.
-It is simply a UI/TUI wrapper around your existing `~/.ssh/config` file.
-
-- All SSH connections are executed through your system’s native ssh binary (OpenSSH).
-
-- Private keys, passwords, and credentials are never stored, transmitted, or modified by dogssh.
-
-- Your existing IdentityFile paths and ssh-agent integrations work exactly as before.
-
-- dogssh only reads and updates your `~/.ssh/config`. A backup of the file is created automatically before any changes.
-
-- File permissions on your SSH config are preserved to ensure security.
-
-
-## 🛡️ Config Safety: Non‑destructive writes and backups
-
-- Non‑destructive edits: dogssh only writes the minimal required changes to your ~/.ssh/config. It uses a parser that preserves existing comments, spacing, order, and any settings it didn’t touch. Your handcrafted comments and formatting remain intact.
-- Atomic writes: updates are written to a temporary file and then atomically renamed over the original, minimizing the risk of partial writes.
-- Backups:
-  - One‑time original backup: before dogssh makes its first change, it creates a single snapshot named config.original.backup beside your SSH config. If this file is present, it will never be recreated or overwritten.
-  - Rolling backups: on every subsequent save, dogssh also creates a timestamped backup named like: ~/.ssh/config-<timestamp>-dogssh.backup. The app keeps at most 10 of these backups, automatically removing the oldest ones.
-
-## 📷 Screenshots
-
-<div align="center">
-
-### 🚀 Startup
-<img src="./docs/loader.png" alt="App starting splash/loader" width="800" />
-
-Clean loading screen when launching the app
+### 安全性与配置安全
+- 🔐 **无新增安全风险**：DogSSH 只是现有 `~/.ssh/config` 文件的 UI/TUI 包装器。所有 SSH 连接均使用系统原生的 ssh 二进制文件。
+- 🛡️ **非破坏性编辑**：对 `~/.ssh/config` 的更改是最低限度的，并保留现有的注释、间距和顺序。
+- 📦 **自动备份**：在进行任何更改之前，会创建一次性原始备份和滚动时间戳备份。
 
 ---
 
-### 📋 Server Management Dashboard
-<img src="./docs/list server.png" alt="Server list view" width="900" />
+## 📦 安装指南
 
-Main dashboard displaying all configured servers with status indicators, pinned favorites at the top, and easy navigation
-
----
-
-### 🔎 Search
-<img src="./docs/search.png" alt="Fuzzy search servers" width="900" />
-
-Fuzzy search functionality to quickly find servers by name, IP address, or tags
-
----
-
-### ➕ Add Server
-<img src="./docs/add server.png" alt="Add a new server" width="900" />
-
-User-friendly form interface for adding new SSH connections.
-
----
-
-### 🔐 Connect to server
-<img src="./docs/ssh.png" alt="SSH connection details" width="900" />
-
-SSH into the selected server
-
-</div>
-
----
-
-## 📦 Installation
-
-### Option 1: Homebrew (macOS)
+### 选项 1: Homebrew (macOS)
 
 ```bash
-brew install Adembc/homebrew-tap/dogssh
+brew install chengzehsiao/homebrew-tap/dogssh
 ```
 
-### Option 2: Download Binary from Releases
+### 选项 2: 从 Releases 下载二进制文件
 
-Download from [GitHub Releases](https://github.com/Adembc/dogssh/releases). You can use the snippet below to automatically fetch the latest version for your OS/ARCH (Darwin/Linux and amd64/arm64 supported):
+从 [GitHub Releases](https://github.com/chengzehsiao/dogssh/releases) 下载。您可以使用以下代码段自动获取适用于您的操作系统/架构（支持 Darwin/Linux 和 amd64/arm64）的最新版本：
 
 ```bash
-# Detect latest version
-LATEST_TAG=$(curl -fsSL https://api.github.com/repos/Adembc/dogssh/releases/latest | jq -r .tag_name)
-# Download the correct binary for your system
-curl -LJO "https://github.com/Adembc/dogssh/releases/download/${LATEST_TAG}/dogssh_$(uname)_$(uname -m).tar.gz"
-# Extract the binary
+# 检测最新版本
+LATEST_TAG=$(curl -fsSL https://api.github.com/repos/chengzehsiao/dogssh/releases/latest | jq -r .tag_name)
+# 下载适用于您系统的正确二进制文件
+curl -LJO "https://github.com/chengzehsiao/dogssh/releases/download/${LATEST_TAG}/dogssh_$(uname)_$(uname -m).tar.gz"
+# 解压二进制文件
 tar -xzf dogssh_$(uname)_$(uname -m).tar.gz
-# Move to /usr/local/bin or another directory in your PATH
+# 移动到 /usr/local/bin 或 PATH 中的其他目录
 sudo mv dogssh /usr/local/bin/
-# enjoy!
+# 享受吧！
 dogssh
 ```
 
-### Option 3: Build from Source
+### 选项 3: 从源代码构建
 
 ```bash
-# Clone the repository
-git clone https://github.com/Adembc/dogssh.git
+# 克隆仓库
+git clone https://github.com/chengzehsiao/dogssh.git
 cd dogssh
 
-# Build for macOS
+# 为 macOS 构建
 make build
 ./bin/dogssh
 
-# Or Run it directly
+# 或直接运行
 make run
 ```
 
 ---
 
-## ⌨️ Key Bindings
+## 🚀 快速开始
 
-| Key   | Action                        |
-| ----- | ----------------------------- |
-| /     | Toggle search bar             |
-| ↑↓/jk | Navigate servers              |
-| Enter | SSH into selected server      |
-| c     | Copy SSH command to clipboard |
-| g     | Ping selected server          |
-| r     | Refresh background data       |
-| a     | Add server                    |
-| e     | Edit server                   |
-| t     | Edit tags                     |
-| d     | Delete server                 |
-| p     | Pin/Unpin server              |
-| s     | Toggle sort field             |
-| S     | Reverse sort order            |
-| q     | Quit                          |
-
-Tip: The hint bar at the top of the list shows the most useful shortcuts.
+1. 确保您的服务器已在 `~/.ssh/config` 中定义。
+2. 从终端运行 `dogssh`。
+3. 使用直观的键盘驱动 UI 管理和连接到您的服务器。
 
 ---
 
-## 🤝 Contributing
+## ⌨️ 快捷键
 
-Contributions are welcome!
+| 按键  | 操作                     |
+| ----- | ------------------------ |
+| /     | 切换搜索栏               |
+| ↑↓/jk | 导航服务器               |
+| Enter | SSH 连接到所选服务器     |
+| c     | 将 SSH 命令复制到剪贴板  |
+| g     | Ping 所选服务器          |
+| r     | 刷新后台数据             |
+| a     | 添加服务器               |
+| e     | 编辑服务器               |
+| t     | 编辑标签                 |
+| d     | 删除服务器               |
+| p     | 固定/取消固定服务器      |
+| s     | 切换排序字段             |
+| S     | 反向排序                 |
+| q     | 退出                     |
 
-- If you spot a bug or have a feature request, please [open an issue](https://github.com/adembc/dogssh/issues).
-- If you'd like to contribute, fork the repo and submit a pull request ❤️.
+提示：列表顶部的提示栏显示了最有用的快捷方式。
 
-We love seeing the community make DogSSH better 🚀
+## 🤝 贡献
+
+欢迎贡献！
+
+- 如果您发现错误或有功能请求，请 [提交 issue](https://github.com/chengzehsiao/dogssh/issues)。
+- 如果您想贡献，请 fork 仓库并提交 pull request ❤️。
+
+我们很高兴看到社区让 DogSSH 变得更好 🚀
 
 ---
 
-## ⭐ Support
+## ⭐ 支持
 
-If you find DogSSH useful, please consider giving the repo a **star** ⭐️ and join [stargazers](https://github.com/adembc/dogssh/stargazers).
-
-☕ You can also support me by [buying me a coffee](https://www.buymeacoffee.com/adembc) ❤️
-<br/>
-<a href="https://buymeacoffee.com/adembc" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="200"></a>
-
+如果您觉得 DogSSH 有用，请考虑给仓库点个 **star** ⭐️ 并加入 [stargazers](https://github.com/chengzehsiao/dogssh/stargazers)。
 
 ---
 
-## 🙏 Acknowledgments
+## 🙏 致谢
 
-- Built with [tview](https://github.com/rivo/tview) and [tcell](https://github.com/gdamore/tcell).
-- Inspired by [k9s](https://github.com/derailed/k9s) and [lazydocker](https://github.com/jesseduffield/lazydocker).
-
+- 使用 [tview](https://github.com/rivo/tview) 和 [tcell](https://github.com/gdamore/tcell) 构建。
+- 灵感来源于 [k9s](https://github.com/derailed/k9s) 和 [lazydocker](https://github.com/jesseduffield/lazydocker)。
