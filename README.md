@@ -1,12 +1,12 @@
 <div align="center">
-  <img src="./docs/logo.png" alt="lazyssh logo" width="600" height="600"/>
+  <img src="./docs/logo.png" alt="dogssh logo" width="600" height="600"/>
 </div>
 
 ---
 
-Lazyssh is a terminal-based, interactive SSH manager inspired by tools like lazydocker and k9s — but built for managing your fleet of servers directly from your terminal.
+DogSSH is a terminal-based, interactive SSH manager inspired by tools like lazydocker and k9s — but built for managing your fleet of servers directly from your terminal.
 <br/>
-With lazyssh, you can quickly navigate, connect, manage, and transfer files between your local machine and any server defined in your `~/.ssh/config`. No more remembering IP addresses or running long scp commands — just a clean, keyboard-driven UI.
+With dogssh, you can quickly navigate, connect, manage, and transfer files between your local machine and any server defined in your `~/.ssh/config`. No more remembering IP addresses or running long scp commands — just a clean, keyboard-driven UI.
 
 ---
 
@@ -39,27 +39,27 @@ With lazyssh, you can quickly navigate, connect, manage, and transfer files betw
 
 ## 🔐 Security Notice
 
-lazyssh does not introduce any new security risks.
+dogssh does not introduce any new security risks.
 It is simply a UI/TUI wrapper around your existing `~/.ssh/config` file.
 
 - All SSH connections are executed through your system’s native ssh binary (OpenSSH).
 
-- Private keys, passwords, and credentials are never stored, transmitted, or modified by lazyssh.
+- Private keys, passwords, and credentials are never stored, transmitted, or modified by dogssh.
 
 - Your existing IdentityFile paths and ssh-agent integrations work exactly as before.
 
-- lazyssh only reads and updates your `~/.ssh/config`. A backup of the file is created automatically before any changes.
+- dogssh only reads and updates your `~/.ssh/config`. A backup of the file is created automatically before any changes.
 
 - File permissions on your SSH config are preserved to ensure security.
 
 
 ## 🛡️ Config Safety: Non‑destructive writes and backups
 
-- Non‑destructive edits: lazyssh only writes the minimal required changes to your ~/.ssh/config. It uses a parser that preserves existing comments, spacing, order, and any settings it didn’t touch. Your handcrafted comments and formatting remain intact.
+- Non‑destructive edits: dogssh only writes the minimal required changes to your ~/.ssh/config. It uses a parser that preserves existing comments, spacing, order, and any settings it didn’t touch. Your handcrafted comments and formatting remain intact.
 - Atomic writes: updates are written to a temporary file and then atomically renamed over the original, minimizing the risk of partial writes.
 - Backups:
-  - One‑time original backup: before lazyssh makes its first change, it creates a single snapshot named config.original.backup beside your SSH config. If this file is present, it will never be recreated or overwritten.
-  - Rolling backups: on every subsequent save, lazyssh also creates a timestamped backup named like: ~/.ssh/config-<timestamp>-lazyssh.backup. The app keeps at most 10 of these backups, automatically removing the oldest ones.
+  - One‑time original backup: before dogssh makes its first change, it creates a single snapshot named config.original.backup beside your SSH config. If this file is present, it will never be recreated or overwritten.
+  - Rolling backups: on every subsequent save, dogssh also creates a timestamped backup named like: ~/.ssh/config-<timestamp>-dogssh.backup. The app keeps at most 10 of these backups, automatically removing the oldest ones.
 
 ## 📷 Screenshots
 
@@ -107,36 +107,36 @@ SSH into the selected server
 ### Option 1: Homebrew (macOS)
 
 ```bash
-brew install Adembc/homebrew-tap/lazyssh
+brew install Adembc/homebrew-tap/dogssh
 ```
 
 ### Option 2: Download Binary from Releases
 
-Download from [GitHub Releases](https://github.com/Adembc/lazyssh/releases). You can use the snippet below to automatically fetch the latest version for your OS/ARCH (Darwin/Linux and amd64/arm64 supported):
+Download from [GitHub Releases](https://github.com/Adembc/dogssh/releases). You can use the snippet below to automatically fetch the latest version for your OS/ARCH (Darwin/Linux and amd64/arm64 supported):
 
 ```bash
 # Detect latest version
-LATEST_TAG=$(curl -fsSL https://api.github.com/repos/Adembc/lazyssh/releases/latest | jq -r .tag_name)
+LATEST_TAG=$(curl -fsSL https://api.github.com/repos/Adembc/dogssh/releases/latest | jq -r .tag_name)
 # Download the correct binary for your system
-curl -LJO "https://github.com/Adembc/lazyssh/releases/download/${LATEST_TAG}/lazyssh_$(uname)_$(uname -m).tar.gz"
+curl -LJO "https://github.com/Adembc/dogssh/releases/download/${LATEST_TAG}/dogssh_$(uname)_$(uname -m).tar.gz"
 # Extract the binary
-tar -xzf lazyssh_$(uname)_$(uname -m).tar.gz
+tar -xzf dogssh_$(uname)_$(uname -m).tar.gz
 # Move to /usr/local/bin or another directory in your PATH
-sudo mv lazyssh /usr/local/bin/
+sudo mv dogssh /usr/local/bin/
 # enjoy!
-lazyssh
+dogssh
 ```
 
 ### Option 3: Build from Source
 
 ```bash
 # Clone the repository
-git clone https://github.com/Adembc/lazyssh.git
-cd lazyssh
+git clone https://github.com/Adembc/dogssh.git
+cd dogssh
 
 # Build for macOS
 make build
-./bin/lazyssh
+./bin/dogssh
 
 # Or Run it directly
 make run
@@ -171,16 +171,16 @@ Tip: The hint bar at the top of the list shows the most useful shortcuts.
 
 Contributions are welcome!
 
-- If you spot a bug or have a feature request, please [open an issue](https://github.com/adembc/lazyssh/issues).
+- If you spot a bug or have a feature request, please [open an issue](https://github.com/adembc/dogssh/issues).
 - If you'd like to contribute, fork the repo and submit a pull request ❤️.
 
-We love seeing the community make Lazyssh better 🚀
+We love seeing the community make DogSSH better 🚀
 
 ---
 
 ## ⭐ Support
 
-If you find Lazyssh useful, please consider giving the repo a **star** ⭐️ and join [stargazers](https://github.com/adembc/lazyssh/stargazers).
+If you find DogSSH useful, please consider giving the repo a **star** ⭐️ and join [stargazers](https://github.com/adembc/dogssh/stargazers).
 
 ☕ You can also support me by [buying me a coffee](https://www.buymeacoffee.com/adembc) ❤️
 <br/>

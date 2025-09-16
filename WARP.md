@@ -17,7 +17,7 @@ LazySSH is a terminal-based, interactive SSH manager inspired by tools like lazy
 
 ### Build and Run
 ```bash
-make build          # Build binary to ./bin/lazyssh
+make build          # Build binary to ./bin/dogssh
 make run            # Run directly from source
 make install        # Build and install to $GOBIN
 make build-all      # Cross-compile for all platforms
@@ -67,8 +67,8 @@ The project follows **Hexagonal Architecture** with clear separation of concerns
 - **TUI (`internal/adapters/ui/tui.go`)**: Main application orchestrator with layout management
 - **ServerList, SearchBar, ServerDetails**: UI components for different views
 - **SSH Config Repository**: Handles safe, atomic config file operations with backups
-- **Metadata Manager**: Stores additional server data (pins, SSH counts) in `~/.lazyssh/metadata.json`
-- **Password Manager**: Encrypted password storage in `~/.lazyssh/passwords.json`
+- **Metadata Manager**: Stores additional server data (pins, SSH counts) in `~/.dogssh/metadata.json`
+- **Password Manager**: Encrypted password storage in `~/.dogssh/passwords.json`
 
 ## Development Guidelines
 

@@ -38,7 +38,7 @@ make quality    # 运行所有代码质量检查 (fmt, vet, lint)
 
 ### 构建
 ```bash
-make build      # 构建二进制文件到 ./bin/lazyssh
+make build      # 构建二进制文件到 ./bin/dogssh
 make build-all  # 为所有平台构建二进制文件
 ```
 

@@ -26,8 +26,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Adembc/lazyssh/internal/core/domain"
-	"github.com/Adembc/lazyssh/internal/core/ports"
+	"github.com/Adembc/dogssh/internal/core/domain"
+	"github.com/Adembc/dogssh/internal/core/ports"
 	"go.uber.org/zap"
 )
 
@@ -236,7 +236,7 @@ func (s *serverService) executeSSHWithSshpass(alias, password string) error {
 // executeSSHWithExpect uses expect to provide password to SSH
 func (s *serverService) executeSSHWithExpect(alias, password string) error {
 	// Create a temporary expect script file for security
-	tempFile, err := os.CreateTemp("", "lazyssh-expect-*.exp")
+	tempFile, err := os.CreateTemp("", "dogssh-expect-*.exp")
 	if err != nil {
 		return fmt.Errorf("failed to create temp expect script: %w", err)
 	}

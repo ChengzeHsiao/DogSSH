@@ -19,13 +19,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Adembc/lazyssh/internal/core/domain"
+	"github.com/Adembc/dogssh/internal/core/domain"
 	"go.uber.org/zap"
 )
 
 func TestPasswordSaving(t *testing.T) {
 	// Create temporary directory for test
-	tempDir, err := os.MkdirTemp("", "lazyssh_test")
+	tempDir, err := os.MkdirTemp("", "dogssh_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}

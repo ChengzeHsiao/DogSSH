@@ -1,5 +1,5 @@
 version: 2
-project_name: lazyssh
+project_name: dogssh
 
 before:
   hooks:
@@ -52,7 +52,7 @@ brews:
   - repository:
       owner: adembc
       name: homebrew-tap
-    homepage: "https://github.com/adembc/lazyssh"
+    homepage: "https://github.com/adembc/dogssh"
     description: "A simple terminal UI for managing SSH connections.  "
 
 release:

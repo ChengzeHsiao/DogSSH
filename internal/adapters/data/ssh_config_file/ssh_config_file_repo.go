@@ -19,8 +19,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Adembc/lazyssh/internal/core/domain"
-	"github.com/Adembc/lazyssh/internal/core/ports"
+	"github.com/Adembc/dogssh/internal/core/domain"
+	"github.com/Adembc/dogssh/internal/core/ports"
 	"github.com/kevinburke/ssh_config"
 	"go.uber.org/zap"
 )

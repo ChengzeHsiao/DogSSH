@@ -18,14 +18,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Adembc/lazyssh/internal/core/domain"
+	"github.com/Adembc/dogssh/internal/core/domain"
 	"github.com/kevinburke/ssh_config"
 )
 
 const (
 	MaxBackups         = 10
 	TempSuffix         = ".tmp"
-	BackupSuffix       = "lazyssh.backup"
+	BackupSuffix       = "dogssh.backup"
 	SSHConfigPerms     = 0o600
 	OriginalBackupName = "config.original.backup"
 )
@@ -99,7 +99,7 @@ func (r *Repository) createHostFromServer(server domain.Server) *ssh_config.Host
 		},
 		Nodes:              make([]ssh_config.Node, 0),
 		LeadingSpace:       4,
-		EOLComment:         "Added by lazyssh",
+		EOLComment:         "Added by dogssh",
 		SpaceBeforeComment: strings.Repeat(" ", 4),
 	}
 

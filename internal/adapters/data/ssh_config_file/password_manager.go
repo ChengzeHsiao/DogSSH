@@ -26,7 +26,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Adembc/lazyssh/internal/core/domain"
+	"github.com/Adembc/dogssh/internal/core/domain"
 	"go.uber.org/zap"
 )
 
@@ -90,7 +90,7 @@ func (p *PasswordManager) savePasswords(passwords map[string]string) error {
 func (p *PasswordManager) getEncryptionKey() []byte {
 	// Use a combination of file path and a static string to create a consistent key
 	// In production, this should use a proper key derivation function with salt
-	keyMaterial := p.filePath + "lazyssh-password-encryption-key"
+	keyMaterial := p.filePath + "dogssh-password-encryption-key"
 	hash := sha256.Sum256([]byte(keyMaterial))
 	return hash[:]
 }

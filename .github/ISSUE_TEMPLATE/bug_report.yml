@@ -13,12 +13,12 @@ body:
     attributes:
       label: Checks
       options:
-        - label: I have searched the [existing issues](https://github.com/adembc/lazyssh/issues).
+        - label: I have searched the [existing issues](https://github.com/adembc/dogssh/issues).
           required: true
 
 
   - type: input
-    id: lazyssh-version
+    id: dogssh-version
     attributes:
       label: LazySSH Version
       placeholder: X.X.X

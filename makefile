@@ -23,7 +23,7 @@ VERSION ?= v0.2.2
 GIT_COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 
 # Build variables
-BINARY_NAME ?= lazyssh
+BINARY_NAME ?= dogssh
 OUTPUT_DIR ?= ./bin
 CMD_DIR ?= ./cmd
 PKG_LIST := $(shell go list ./...)
