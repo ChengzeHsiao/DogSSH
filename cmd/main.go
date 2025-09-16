@@ -57,7 +57,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:   ui.AppName,
-		Short: "Lazy SSH server picker TUI",
+		Short: "🐕 Your faithful SSH companion - Interactive SSH server management TUI",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return tui.Run()
 		},
