@@ -149,23 +149,130 @@ func (s *serverService) SetPinned(alias string, pinned bool) error {
 }
 
 // SSH starts an interactive SSH session to the given alias using the system's ssh client.
+// If a password is stored for the server, it will be used for authentication.
 func (s *serverService) SSH(alias string) error {
 	s.logger.Infow("ssh start", "alias", alias)
-	cmd := exec.Command("ssh", alias)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		s.logger.Errorw("ssh command failed", "alias", alias, "error", err)
-		return err
+
+	// Check if password exists for this server
+	hasPassword, err := s.serverRepository.HasPassword(alias)
+	if err != nil {
+		s.logger.Warnw("failed to check password", "alias", alias, "error", err)
+		// Fallback to original SSH command
+		return s.executeSSHCommandWithoutPassword(alias)
 	}
 
-	if err := s.serverRepository.RecordSSH(alias); err != nil {
-		s.logger.Errorw("failed to record ssh metadata", "alias", alias, "error", err)
+	var sshErr error
+	if hasPassword {
+		// Try SSH with stored password first
+		sshErr = s.executeSSHCommandWithPassword(alias)
+		if sshErr != nil {
+			s.logger.Warnw("ssh with password failed, falling back to normal ssh", "alias", alias, "error", sshErr)
+			// If password auth fails, fallback to normal SSH (key-based or interactive)
+			sshErr = s.executeSSHCommandWithoutPassword(alias)
+		}
+	} else {
+		// No password stored, use normal SSH
+		sshErr = s.executeSSHCommandWithoutPassword(alias)
+	}
+
+	// Record SSH access regardless of success or failure
+	if recordErr := s.serverRepository.RecordSSH(alias); recordErr != nil {
+		s.logger.Errorw("failed to record ssh metadata", "alias", alias, "error", recordErr)
+	}
+
+	if sshErr != nil {
+		s.logger.Errorw("ssh command failed", "alias", alias, "error", sshErr)
+		return sshErr
 	}
 
 	s.logger.Infow("ssh end", "alias", alias)
 	return nil
+}
+
+// executeSSHCommandWithoutPassword executes SSH command without password (key-based or interactive)
+func (s *serverService) executeSSHCommandWithoutPassword(alias string) error {
+	cmd := exec.Command("ssh", alias)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
+}
+
+// executeSSHCommandWithPassword executes SSH command using stored password
+func (s *serverService) executeSSHCommandWithPassword(alias string) error {
+	// Get the decrypted password
+	password, err := s.serverRepository.GetDecryptedPassword(alias)
+	if err != nil {
+		s.logger.Errorw("failed to get decrypted password", "alias", alias, "error", err)
+		return fmt.Errorf("failed to get stored password: %w", err)
+	}
+
+	return s.executeSSHWithSshpass(alias, password)
+}
+
+// executeSSHWithSshpass uses sshpass to provide password to SSH
+func (s *serverService) executeSSHWithSshpass(alias, password string) error {
+	// Check if sshpass is available
+	if _, err := exec.LookPath("sshpass"); err == nil {
+		// Use sshpass to provide password
+		s.logger.Infow("using sshpass for password authentication", "alias", alias)
+		cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "PreferredAuthentications=password", "-o", "PubkeyAuthentication=no", alias)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	}
+
+	// Check if expect is available as fallback
+	if _, err := exec.LookPath("expect"); err == nil {
+		s.logger.Infow("using expect for password authentication", "alias", alias)
+		return s.executeSSHWithExpect(alias, password)
+	}
+
+	s.logger.Warnw("neither sshpass nor expect found, cannot use password authentication", "alias", alias)
+	return fmt.Errorf("neither sshpass nor expect available for password authentication")
+}
+
+// executeSSHWithExpect uses expect to provide password to SSH
+func (s *serverService) executeSSHWithExpect(alias, password string) error {
+	// Create a temporary expect script file for security
+	tempFile, err := os.CreateTemp("", "lazyssh-expect-*.exp")
+	if err != nil {
+		return fmt.Errorf("failed to create temp expect script: %w", err)
+	}
+	defer func() {
+		_ = os.Remove(tempFile.Name())
+	}()
+
+	// Write expect script to temp file
+	expectScript := fmt.Sprintf(`#!/usr/bin/expect -f
+set timeout 30
+spawn ssh -o "PreferredAuthentications=password" -o "PubkeyAuthentication=no" %s
+expect {
+    "password:" { send "%s\r"; interact }
+    "Password:" { send "%s\r"; interact }
+    timeout { exit 1 }
+    eof { exit 1 }
+}
+`, alias, password, password)
+
+	if _, err := tempFile.WriteString(expectScript); err != nil {
+		return fmt.Errorf("failed to write expect script: %w", err)
+	}
+	_ = tempFile.Close()
+
+	// Make script executable (owner read/write/execute only)
+	//nolint:gosec // G302: Need execute permission for expect script
+	if err := os.Chmod(tempFile.Name(), 0o700); err != nil {
+		return fmt.Errorf("failed to make expect script executable: %w", err)
+	}
+
+	//nolint:gosec // Using temporary file for expect script is acceptable here
+	cmd := exec.Command("expect", tempFile.Name())
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 // Ping checks if the server is reachable on its SSH port.
@@ -194,6 +301,11 @@ func (s *serverService) Ping(server domain.Server) (bool, time.Duration, error) 
 	}
 	_ = conn.Close()
 	return true, time.Since(start), nil
+}
+
+// HasPassword checks if a password is stored for the given server alias.
+func (s *serverService) HasPassword(alias string) (bool, error) {
+	return s.serverRepository.HasPassword(alias)
 }
 
 // resolveSSHDestination uses `ssh -G <alias>` to extract HostName and Port from the user's SSH config.

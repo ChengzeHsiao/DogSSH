@@ -56,6 +56,7 @@ func renderTagChips(tags []string) string {
 	return strings.Join(chips, " ")
 }
 
+// UpdateServer updates the details view with the provided server information.
 func (sd *ServerDetails) UpdateServer(server domain.Server) {
 	lastSeen := server.LastSeen.Format("2006-01-02 15:04:05")
 	if server.LastSeen.IsZero() {
@@ -68,10 +69,43 @@ func (sd *ServerDetails) UpdateServer(server domain.Server) {
 		pinnedStr = "false"
 	}
 	tagsText := renderTagChips(server.Tags)
+
+	// 显示密码状态而不是明文密码
+	passwordStatus := "Not set"
+
 	text := fmt.Sprintf(
-		"[::b]%s[-]\n\nHost: [white]%s[-]\nUser: [white]%s[-]\nPort: [white]%d[-]\nKey:  [white]%s[-]\nTags: %s\nPinned: [white]%s[-]\nLast SSH: %s\nSSH Count: [white]%d[-]\n\n[::b]Commands:[-]\n  Enter: SSH connect\n  c: Copy SSH command\n  g: Ping server\n  r: Refresh list\n  a: Add new server\n  e: Edit entry\n  t: Edit tags\n  d: Delete entry\n  p: Pin/Unpin",
+		"[::b]%s[-]\n\nHost: [white]%s[-]\nUser: [white]%s[-]\nPort: [white]%d[-]\nKey:  [white]%s[-]\nPassword: [white]%s[-]\nTags: %s\nPinned: [white]%s[-]\nLast SSH: %s\nSSH Count: [white]%d[-]\n\n[::b]Commands:[-]\n  Enter: SSH connect\n  c: Copy SSH command\n  g: Ping server\n  r: Refresh list\n  a: Add new server\n  e: Edit entry\n  t: Edit tags\n  d: Delete entry\n  p: Pin/Unpin",
 		strings.Join(server.Aliases, ", "), server.Host, server.User, server.Port,
-		serverKey, tagsText, pinnedStr,
+		serverKey, passwordStatus, tagsText, pinnedStr,
+		lastSeen, server.SSHCount)
+	sd.TextView.SetText(text)
+}
+
+// UpdateServerWithPasswordCheck updates the details view with the provided server information.
+// It also checks if a password is stored for the server and displays the appropriate status.
+func (sd *ServerDetails) UpdateServerWithPasswordCheck(server domain.Server, hasPassword bool) {
+	lastSeen := server.LastSeen.Format("2006-01-02 15:04:05")
+	if server.LastSeen.IsZero() {
+		lastSeen = "Never"
+	}
+	serverKey := strings.Join(server.IdentityFiles, ", ")
+
+	pinnedStr := "true"
+	if server.PinnedAt.IsZero() {
+		pinnedStr = "false"
+	}
+	tagsText := renderTagChips(server.Tags)
+
+	// 显示密码状态而不是明文密码
+	passwordStatus := "Not set"
+	if hasPassword {
+		passwordStatus = "Set (hidden)"
+	}
+
+	text := fmt.Sprintf(
+		"[::b]%s[-]\n\nHost: [white]%s[-]\nUser: [white]%s[-]\nPort: [white]%d[-]\nKey:  [white]%s[-]\nPassword: [white]%s[-]\nTags: %s\nPinned: [white]%s[-]\nLast SSH: %s\nSSH Count: [white]%d[-]\n\n[::b]Commands:[-]\n  Enter: SSH connect\n  c: Copy SSH command\n  g: Ping server\n  r: Refresh list\n  a: Add new server\n  e: Edit entry\n  t: Edit tags\n  d: Delete entry\n  p: Pin/Unpin",
+		strings.Join(server.Aliases, ", "), server.Host, server.User, server.Port,
+		serverKey, passwordStatus, tagsText, pinnedStr,
 		lastSeen, server.SSHCount)
 	sd.TextView.SetText(text)
 }

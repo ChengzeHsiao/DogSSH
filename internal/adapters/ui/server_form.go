@@ -78,12 +78,13 @@ func (sf *ServerForm) addFormFields() {
 	var defaultValues ServerFormData
 	if sf.mode == ServerFormEdit && sf.original != nil {
 		defaultValues = ServerFormData{
-			Alias: sf.original.Alias,
-			Host:  sf.original.Host,
-			User:  sf.original.User,
-			Port:  fmt.Sprint(sf.original.Port),
-			Key:   strings.Join(sf.original.IdentityFiles, ", "),
-			Tags:  strings.Join(sf.original.Tags, ", "),
+			Alias:    sf.original.Alias,
+			Host:     sf.original.Host,
+			User:     sf.original.User,
+			Port:     fmt.Sprint(sf.original.Port),
+			Key:      strings.Join(sf.original.IdentityFiles, ", "),
+			Password: sf.original.Password, // Display existing password (as placeholder)
+			Tags:     strings.Join(sf.original.Tags, ", "),
 		}
 	} else {
 		defaultValues = ServerFormData{
@@ -98,26 +99,29 @@ func (sf *ServerForm) addFormFields() {
 	sf.Form.AddInputField("User:", defaultValues.User, 20, nil, nil)
 	sf.Form.AddInputField("Port:", defaultValues.Port, 20, nil, nil)
 	sf.Form.AddInputField("Key (Comma):", defaultValues.Key, 40, nil, nil)
+	sf.Form.AddInputField("Password:", defaultValues.Password, 20, nil, nil) // Add password input field
 	sf.Form.AddInputField("Tags (comma):", defaultValues.Tags, 30, nil, nil)
 }
 
 type ServerFormData struct {
-	Alias string
-	Host  string
-	User  string
-	Port  string
-	Key   string
-	Tags  string
+	Alias    string
+	Host     string
+	User     string
+	Port     string
+	Key      string
+	Password string
+	Tags     string
 }
 
 func (sf *ServerForm) getFormData() ServerFormData {
 	return ServerFormData{
-		Alias: strings.TrimSpace(sf.Form.GetFormItem(0).(*tview.InputField).GetText()),
-		Host:  strings.TrimSpace(sf.Form.GetFormItem(1).(*tview.InputField).GetText()),
-		User:  strings.TrimSpace(sf.Form.GetFormItem(2).(*tview.InputField).GetText()),
-		Port:  strings.TrimSpace(sf.Form.GetFormItem(3).(*tview.InputField).GetText()),
-		Key:   strings.TrimSpace(sf.Form.GetFormItem(4).(*tview.InputField).GetText()),
-		Tags:  strings.TrimSpace(sf.Form.GetFormItem(5).(*tview.InputField).GetText()),
+		Alias:    strings.TrimSpace(sf.Form.GetFormItem(0).(*tview.InputField).GetText()),
+		Host:     strings.TrimSpace(sf.Form.GetFormItem(1).(*tview.InputField).GetText()),
+		User:     strings.TrimSpace(sf.Form.GetFormItem(2).(*tview.InputField).GetText()),
+		Port:     strings.TrimSpace(sf.Form.GetFormItem(3).(*tview.InputField).GetText()),
+		Key:      strings.TrimSpace(sf.Form.GetFormItem(4).(*tview.InputField).GetText()),
+		Password: strings.TrimSpace(sf.Form.GetFormItem(5).(*tview.InputField).GetText()), // Get password input
+		Tags:     strings.TrimSpace(sf.Form.GetFormItem(6).(*tview.InputField).GetText()),
 	}
 }
 
@@ -172,12 +176,21 @@ func (sf *ServerForm) dataToServer(data ServerFormData) domain.Server {
 			}
 		}
 	}
+
+	// Handle password field: if user didn't change the placeholder, don't update password
+	password := data.Password
+	if password == "****" {
+		// User didn't change the password placeholder, so don't update it
+		password = ""
+	}
+
 	return domain.Server{
 		Alias:         data.Alias,
 		Host:          data.Host,
 		User:          data.User,
 		Port:          port,
 		IdentityFiles: keys,
+		Password:      password, // Only set if user entered a new password
 		Tags:          tags,
 	}
 }

@@ -28,4 +28,6 @@ type ServerService interface {
 	SetPinned(alias string, pinned bool) error
 	SSH(alias string) error
 	Ping(server domain.Server) (bool, time.Duration, error)
+	// HasPassword checks if a password is stored for the given server alias.
+	HasPassword(alias string) (bool, error)
 }

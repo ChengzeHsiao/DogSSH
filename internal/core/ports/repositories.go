@@ -23,4 +23,8 @@ type ServerRepository interface {
 	DeleteServer(server domain.Server) error
 	SetPinned(alias string, pinned bool) error
 	RecordSSH(alias string) error
+	// HasPassword checks if a password is stored for the given server alias.
+	HasPassword(alias string) (bool, error)
+	// GetDecryptedPassword retrieves and decrypts the password for a server.
+	GetDecryptedPassword(alias string) (string, error)
 }

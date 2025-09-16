@@ -178,7 +178,16 @@ func (t *tui) handleServerConnect() {
 }
 
 func (t *tui) handleServerSelectionChange(server domain.Server) {
-	t.details.UpdateServer(server)
+	// Check if a password is stored for the server
+	hasPassword, err := t.serverService.HasPassword(server.Alias)
+	if err != nil {
+		// Log the error but don't fail
+		t.logger.Warnw("failed to check password existence", "alias", server.Alias, "error", err)
+		hasPassword = false
+	}
+
+	// Update the details view with the server information and password status
+	t.details.UpdateServerWithPasswordCheck(server, hasPassword)
 }
 
 func (t *tui) handleServerAdd() {

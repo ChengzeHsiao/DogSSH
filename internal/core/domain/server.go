@@ -23,6 +23,7 @@ type Server struct {
 	User          string
 	Port          int
 	IdentityFiles []string
+	Password      string // Used for storing encrypted passwords
 	Tags          []string
 	LastSeen      time.Time
 	PinnedAt      time.Time

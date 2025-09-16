@@ -85,6 +85,12 @@ func (r *Repository) mergeMetadata(servers []domain.Server, metadata map[string]
 	for i, server := range servers {
 		servers[i].LastSeen = time.Time{}
 
+		// Check if password exists for this server
+		if hasPassword, err := r.HasPassword(server.Alias); err == nil && hasPassword {
+			// Set a placeholder to indicate password exists (don't load the actual hash)
+			servers[i].Password = "****"
+		}
+
 		if meta, exists := metadata[server.Alias]; exists {
 			servers[i].Tags = meta.Tags
 			servers[i].SSHCount = meta.SSHCount

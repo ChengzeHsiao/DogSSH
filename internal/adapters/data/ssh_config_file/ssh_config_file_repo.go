@@ -16,6 +16,8 @@ package ssh_config_file
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 
 	"github.com/Adembc/lazyssh/internal/core/domain"
 	"github.com/Adembc/lazyssh/internal/core/ports"
@@ -28,26 +30,35 @@ type Repository struct {
 	configPath      string
 	fileSystem      FileSystem
 	metadataManager *metadataManager
+	passwordManager *PasswordManager // Password manager for encrypted password storage
 	logger          *zap.SugaredLogger
 }
 
 // NewRepository creates a new SSH config repository.
 func NewRepository(logger *zap.SugaredLogger, configPath, metaDataPath string) ports.ServerRepository {
+	// Determine password file path (in the same directory as metadata file)
+	passwordPath := filepath.Join(filepath.Dir(metaDataPath), "passwords.json")
+
 	return &Repository{
 		logger:          logger,
 		configPath:      configPath,
 		fileSystem:      DefaultFileSystem{},
 		metadataManager: newMetadataManager(metaDataPath, logger),
+		passwordManager: NewPasswordManager(passwordPath, logger), // Initialize password manager
 	}
 }
 
 // NewRepositoryWithFS creates a new SSH config repository with a custom filesystem.
 func NewRepositoryWithFS(logger *zap.SugaredLogger, configPath string, metaDataPath string, fs FileSystem) ports.ServerRepository {
+	// Determine password file path (in the same directory as metadata file)
+	passwordPath := filepath.Join(filepath.Dir(metaDataPath), "passwords.json")
+
 	return &Repository{
 		logger:          logger,
 		configPath:      configPath,
 		fileSystem:      fs,
 		metadataManager: newMetadataManager(metaDataPath, logger),
+		passwordManager: NewPasswordManager(passwordPath, logger), // Initialize password manager
 	}
 }
 
@@ -91,6 +102,15 @@ func (r *Repository) AddServer(server domain.Server) error {
 		r.logger.Warnf("Failed to save config while adding new server: %v", err)
 		return fmt.Errorf("failed to save config: %w", err)
 	}
+
+	// Save password (if provided)
+	if server.Password != "" {
+		if err := r.passwordManager.UpdateServerPassword(server, server.Password); err != nil {
+			r.logger.Errorw("failed to save password while adding new server", "alias", server.Alias, "error", err)
+			// Note: We log the error but don't prevent server addition, as password storage is an additional feature
+		}
+	}
+
 	return r.metadataManager.updateServer(server, server.Alias)
 }
 
@@ -130,6 +150,15 @@ func (r *Repository) UpdateServer(server domain.Server, newServer domain.Server)
 		r.logger.Warnf("Failed to save config while updating server: %v", err)
 		return fmt.Errorf("failed to save config: %w", err)
 	}
+
+	// Update password (if a new password is provided)
+	if newServer.Password != "" {
+		if err := r.passwordManager.UpdateServerPassword(newServer, newServer.Password); err != nil {
+			r.logger.Errorw("failed to update password while updating server", "alias", newServer.Alias, "error", err)
+			// Note: We log the error but don't prevent server update, as password storage is an additional feature
+		}
+	}
+
 	// Update metadata; pass old alias to allow inline migration
 	return r.metadataManager.updateServer(newServer, server.Alias)
 }
@@ -152,6 +181,13 @@ func (r *Repository) DeleteServer(server domain.Server) error {
 		r.logger.Warnf("Failed to save config while deleting server: %v", err)
 		return fmt.Errorf("failed to save config: %w", err)
 	}
+
+	// Delete password
+	if err := r.passwordManager.DeleteServerPassword(server.Alias); err != nil {
+		r.logger.Warnw("failed to delete password while deleting server", "alias", server.Alias, "error", err)
+		// Note: We log the warning but don't prevent server deletion, as password storage is an additional feature
+	}
+
 	return r.metadataManager.deleteServer(server.Alias)
 }
 
@@ -163,4 +199,27 @@ func (r *Repository) SetPinned(alias string, pinned bool) error {
 // RecordSSH increments the SSH access count and updates the last seen timestamp for a server.
 func (r *Repository) RecordSSH(alias string) error {
 	return r.metadataManager.recordSSH(alias)
+}
+
+// HasPassword checks if a password is stored for the given server alias.
+func (r *Repository) HasPassword(alias string) (bool, error) {
+	_, err := r.passwordManager.GetServerPassword(alias)
+	if err != nil {
+		// If the error indicates that the password was not found, return false
+		// Otherwise, return the error
+		if strings.Contains(err.Error(), "not found") {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+// GetDecryptedPassword retrieves and decrypts the password for a server
+func (r *Repository) GetDecryptedPassword(alias string) (string, error) {
+	encryptedPassword, err := r.passwordManager.GetServerPassword(alias)
+	if err != nil {
+		return "", err
+	}
+	return r.passwordManager.DecryptPassword(encryptedPassword)
 }
