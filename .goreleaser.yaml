@@ -50,10 +50,11 @@ changelog:
       - "^test:"
 brews:
   - repository:
-      owner: adembc
+      owner: chengzehsiao
       name: homebrew-tap
-    homepage: "https://github.com/adembc/dogssh"
-    description: "A simple terminal UI for managing SSH connections.  "
+    homepage: "https://github.com/ChengzeHsiao/DogSSH"
+    description: "🐕 Your faithful SSH companion - Interactive SSH server management TUI"
+    license: "Apache-2.0"
 
 release:
   footer: >-
